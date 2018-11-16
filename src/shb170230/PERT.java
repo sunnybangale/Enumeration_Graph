@@ -5,8 +5,8 @@
 // change package to your netid
 package shb170230;
 
+import rbk.Graph;
 import rbk.Graph.Vertex;
-import rbk.Graph.Edge;
 import rbk.Graph.GraphAlgorithm;
 import rbk.Graph.Factory;
 

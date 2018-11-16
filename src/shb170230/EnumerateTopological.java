@@ -3,10 +3,9 @@
  */
 
 package shb170230;
+import rbk.Graph;
 import rbk.Graph.GraphAlgorithm;
-import rbk.Graph.Timer;
 import rbk.Graph.Vertex;
-import rbk.Graph.Edge;
 import rbk.Graph.Factory;
 
 public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.EnumVertex> {
