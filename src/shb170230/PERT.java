@@ -11,12 +11,28 @@ import rbk.Graph.GraphAlgorithm;
 import rbk.Graph.Factory;
 
 import java.io.File;
+import java.util.List;
 import java.util.Scanner;
 
 public class PERT extends GraphAlgorithm<PERT.PERTVertex> {
     public static class PERTVertex implements Factory {
+
+    	int ec;
+    	int lc;
+    	int slack;
+    	int duration;
+    	boolean critical;
+
+
 	public PERTVertex(Vertex u) {
+
+		this.ec = 0;
+		this.lc = 0;
+		this.slack = 0;
+		this.duration = 0;
+		this.critical = false;
 	}
+
 	public PERTVertex make(Vertex u) { return new PERTVertex(u); }
     }
 
@@ -56,6 +72,26 @@ public class PERT extends GraphAlgorithm<PERT.PERTVertex> {
 
     // setDuration(u, duration[u.getIndex()]);
     public static PERT pert(Graph g, int[] duration) {
+
+    	DFS d = new DFS(g);
+    	List<Vertex> topologicalList = d.topologicalOrder1();
+
+
+    	for(Vertex u: topologicalList)
+		{
+			PERTVertex p = new PERTVertex(u);
+			p.ec = 0;
+		}
+
+		for(Vertex u : d.finishList)
+		{
+			for(Graph.Edge e: g.outEdges(u))
+			{
+
+			}
+		}
+
+
 	return null;
     }
     
