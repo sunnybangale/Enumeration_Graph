@@ -5,7 +5,7 @@
 
 package shb170230;
 
-import java.util.Comparator;
+import java.util.Arrays;
 
 public class Enumerate<T> {
     T[] arr;
@@ -38,24 +38,23 @@ public class Enumerate<T> {
 
     // n = arr.length, choose k things, d elements arr[0..d-1] done
     // c more elements are needed from arr[d..n-1].  d = k-c.
-    public void permute(int c) {  // To do for LP4
-    }
-
-    // choose c items from A[0..i-1].  In SP11-opt
-    public void combine(int i, int c) {
-    }
-
-    // Still g elements to go.  In SP11-opt
-    public void heap(int g) {
-    }
-
-    // In SP11-opt
-    public void algorithmL(Comparator<T> c) {
+    public void permute(int c) {
+        if (c == 0) {
+            visit(arr);
+        } else {
+            int d = k - c;
+            permute(c - 1);
+            for (int i = d + 1; i < arr.length; i++) {
+                swap(d, i);
+                permute(c - 1);
+                swap(d, i);
+            }
+        }
     }
 
     public void visit(T[] array) {
 	count++;
-	app.visit(array, k);
+        //app.visit(array, k);
     }
     
     //----------------------Nested class: Approver-----------------------
@@ -104,53 +103,27 @@ public class Enumerate<T> {
 	return e;
     }
 
-    // Enumerate combinations of k items out of n = arr.length
-    public static<T> Enumerate<T> combine(T[] arr, int k) {
-	Enumerate<T> e = new Enumerate<>(arr, k);
-	e.combine(0, k);
-	return e;
-    }
-
-    // Enumerate permutations of n = arr.length item, using Heap's algorithm
-    public static<T> Enumerate<T> heap(T[] arr) {
-    	Enumerate<T> e = new Enumerate<>(arr, arr.length);
-	e.heap(arr.length);
-	return e;
-    }
-
-    // Enumerate permutations of items in array, using Knuth's algorithm L
-    public static<T> Enumerate<T> algorithmL(T[] arr, Comparator<T> c) {
-	Enumerate<T> e = new Enumerate<>(arr, arr.length);
-	e.algorithmL(c);
-	return e;
-    }
-
     public static void main(String args[]) {
-        int n = 4;
-	int k = 3;
-	if(args.length > 0) { n = Integer.parseInt(args[0]);  k = n; }
-	if(args.length > 1) { k = Integer.parseInt(args[1]); }
+        int n = 1000;
+        int k = 10;
+        if (args.length > 0) {
+            n = Integer.parseInt(args[0]);
+            k = n;
+        }
+        if (args.length > 1) {
+            k = Integer.parseInt(args[1]);
+        }
         Integer[] arr = new Integer[n];
         for (int i = 0; i < n; i++) {
-	    arr[i] = i+1;
-	}
+            arr[i] = i + 1;
+        }
+        System.out.println(Arrays.toString(arr));
 
-	System.out.println("Permutations: " + n + " " + k);
-	Enumerate<Integer> e = permute(arr, k);
-	System.out.println("Count: " + e.count + "\n_________________________");
+        System.out.println("Permutations: " + n + " " + k);
+        Integer[] test = {1, 2, 2, 3, 3, 4};
+        Enumerate<Integer> e = permute(arr, k);
 
-	System.out.println("combinations: " + n + " " + k);
-	e = combine(arr, k);
-	System.out.println("Count: " + e.count + "\n_________________________");
-	
-	System.out.println("Heap Permutations: " + n);
-	e = heap(arr);
-	System.out.println("Count: " + e.count + "\n_________________________");
-	
-	Integer[] test = {1,2,2,3,3,4};
-	System.out.println("Algorithm L Permutations: ");
-	e = algorithmL(test, (Integer a, Integer b) -> a.compareTo(b));
-	System.out.println("Count: " + e.count + "\n_________________________");
+        System.out.println("Count: " + e.count + "\n_________________________");
     }
 }
 
