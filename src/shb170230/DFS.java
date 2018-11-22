@@ -43,7 +43,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex>
      */
     public static DFS depthFirstSearch(Graph g) {
         DFS d = new DFS(g);
-        d.dfs(g);
+        d.dfs(/*g*/);
         return d;
     }
 
@@ -87,7 +87,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex>
      * Purpose: Helper method for DFS. It performs Depth first search of graph
      * @param g
      */
-    private void dfs(Graph g) {
+    private void dfs(/*Graph g*/) {
 
         for (Vertex u : g) {
             get(u).vertexColor = color.WHITE ;
@@ -142,7 +142,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex>
      */
     public List<Vertex> topologicalOrder1()
     {
-        dfs(g);
+        dfs(/*g*/);
         return isCycle ? null : finishList;
     }
 

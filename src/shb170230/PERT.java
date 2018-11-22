@@ -1,5 +1,8 @@
 /* Driver code for PERT algorithm (LP4)
  * @author
+ * Ameya Kasar (aak170230)
+ *
+ *
  */
 
 // change package to your netid
@@ -7,21 +10,32 @@ package shb170230;
 
 import rbk.Graph;
 import rbk.Graph.Vertex;
+import rbk.Graph.Edge;
 import rbk.Graph.GraphAlgorithm;
 import rbk.Graph.Factory;
-
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
+
 public class PERT extends GraphAlgorithm<PERT.PERTVertex> {
+
+    private int criticalCount = 0;
+    private boolean isPERTDag=false;
+
+    public int getCriticalCount() {
+        return criticalCount;
+    }
+
+
     public static class PERTVertex implements Factory {
 
-    	int ec;
-    	int lc;
-    	int slack;
-    	int duration;
-    	boolean critical;
+    	private int ec;
+        private int lc;
+        private int slack;
+        private int duration;
+        private boolean critical;
 
 
 	public PERTVertex(Vertex u) {
@@ -33,7 +47,8 @@ public class PERT extends GraphAlgorithm<PERT.PERTVertex> {
 		this.critical = false;
 	}
 
-	public PERTVertex make(Vertex u) { return new PERTVertex(u); }
+	public PERTVertex make(Vertex u) {
+	    return new PERTVertex(u); }
     }
 
     public PERT(Graph g) {
@@ -41,58 +56,132 @@ public class PERT extends GraphAlgorithm<PERT.PERTVertex> {
     }
 
     public void setDuration(Vertex u, int d) {
+        get(u).duration = d;
     }
-    
+
+    //TODO
     public boolean pert() {
-	return false;
+	    return isPERTDag;
     }
     public int ec(Vertex u) {
-	return 0;
+	return get(u).ec;
     }
 
     public int lc(Vertex u) {
-	return 0;
+	return get(u).lc;
     }
 
     public int slack(Vertex u) {
-	return 0;
+	return get(u).slack;
     }
 
+    /**
+     * Duration required to complete the task
+     * @return Duration of critical path
+     */
     public int criticalPath() {
-	return 0;
+
+        Vertex t = g.getVertex(g.size());
+        return get(t).ec;
     }
 
     public boolean critical(Vertex u) {
-	return false;
+	return get(u).critical;
     }
 
+    /**
+     * Number of critical nodes in the graph
+     * @return Number of critical nodes
+     */
     public int numCritical() {
-	return 0;
+	    return getCriticalCount();
+    }
+
+    //User defined
+    private void pert(int[] duration){
+        //Adding source and target node
+        Vertex s = g.getVertex(1);
+        Vertex t = g.getVertex(g.size());
+        int m = g.edgeSize();
+        for(int i=2; i<g.size(); i++) {
+            g.addEdge(s, g.getVertex(i), 1, ++m);
+            g.addEdge(g.getVertex(i), t, 1, ++m);
+        }
+
+        for (Vertex u : g){
+            setDuration(u,duration[u.getIndex()]);
+        }
+
+        DFS dfs = new DFS(g);
+        List<Vertex> topologicalList = dfs.topologicalOrder1();
+
+        isPERTDag = dfs.isCycle;
+        if(isPERTDag){
+            return;
+        }
+        for(Vertex u : topologicalList)
+        {
+            for(Edge e: g.outEdges(u))
+            {
+                Vertex v = e.otherEnd(u);
+                if(get(u).ec + get(v).duration > get(v).ec)
+                {
+                    get(v).ec = get(u).ec + get(v).duration;
+                }
+            }
+        }
+
+        //Vertex t = g.getVertex(g.size());
+        int maxTime = get(t).ec;
+
+        for(Vertex u: g)
+        {
+            if(!u.equals(g.getVertex(1))){
+                get(u).lc = maxTime;
+            }
+        }
+
+        Collections.reverse(topologicalList);
+
+
+        for(Vertex u: topologicalList)
+        {
+            //if( !( u.equals(g.getVertex(1)) ||  u.equals(g.getVertex(g.size())) ) ){
+                for(Edge e: g.outEdges(u))
+                {
+                    Vertex v = e.otherEnd(u);
+
+                    if(get(v).lc - get(v).duration < get(u).lc)
+                    {
+                        get(u).lc = get(v).lc - get(v).duration;
+                    }
+                }
+                get(u).slack = get(u).lc - get(u).ec;
+                setCritical(u);
+            //}
+
+        }
+
+    }
+
+    private void setCritical(Vertex u)
+    {
+        if(get(u).slack == 0)
+        {
+            get(u).critical = true;
+            criticalCount++;
+        }
     }
 
     // setDuration(u, duration[u.getIndex()]);
     public static PERT pert(Graph g, int[] duration) {
-
-    	DFS d = new DFS(g);
-    	List<Vertex> topologicalList = d.topologicalOrder1();
-
-
-    	for(Vertex u: topologicalList)
-		{
-			PERTVertex p = new PERTVertex(u);
-			p.ec = 0;
-		}
-
-		for(Vertex u : d.finishList)
-		{
-			for(Graph.Edge e: g.outEdges(u))
-			{
-
-			}
-		}
-
-
-	return null;
+    	PERT p= new PERT(g);
+        p.pert(duration);
+        if(p.pert()){
+            return null;
+        }else{
+            return p;
+        }
     }
     
     public static void main(String[] args) throws Exception {
