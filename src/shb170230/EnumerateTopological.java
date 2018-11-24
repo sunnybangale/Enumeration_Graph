@@ -8,6 +8,8 @@ import rbk.Graph.GraphAlgorithm;
 import rbk.Graph.Vertex;
 import rbk.Graph.Factory;
 
+import java.util.List;
+
 public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.EnumVertex> {
     boolean print;  // Set to true to print array in visit
     long count;      // Number of permutations or combinations visited
@@ -20,37 +22,75 @@ public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.En
     }
 
     static class EnumVertex implements Factory {
-	EnumVertex() { }
-	public EnumVertex make(Vertex u) { return new EnumVertex();	}
+
+    	int inDegree;
+
+		EnumVertex() {
+			this.inDegree = 0;
+		}
+
+		public EnumVertex make(Vertex u) { return new EnumVertex();	}
+
+
     }
 
-    class Selector extends Enumerate.Approver<Vertex> {
-	@Override
-	public boolean select(Vertex u) {
-	    return true;
-	}
-
-	@Override
-	public void unselect(Vertex u) {
-	}
-
-	@Override
-	public void visit(Vertex[] arr, int k) {
-	    count++;
-	    if(print) {
-		for(Vertex u: arr) {
-		    System.out.print(u + " ");
+	private void init (/*Graph g*/){
+    	for(Vertex u : g){
+    		get(u).inDegree = u.inDegree();
 		}
-		System.out.println();
-	    }
 	}
+
+    class Selector extends Enumerate.Approver<Vertex> {
+		@Override
+		public boolean select(Vertex u) {
+
+			if(u.inDegree() == 0){
+				for(Graph.Edge x : g.outEdges(u)){
+					Vertex t = x.toVertex();
+					get(t).inDegree--;
+				}
+				return true;
+			}
+
+
+			return false;
+		}
+
+		@Override
+		public void unselect(Vertex u) {
+			for(Graph.Edge x : g.outEdges(u)){
+				Vertex t = x.toVertex();
+				get(t).inDegree++;
+			}
+		}
+
+		@Override
+		public void visit(Vertex[] arr, int k) {
+			count++;
+			if(print) {
+			for(Vertex u: arr) {
+				System.out.print(u + " ");
+			}
+			System.out.println();
+			}
+		}
     }
     
     
     // To do: LP4; return the number of topological orders of g
     public long enumerateTopological(boolean flag) {
-	print = flag;
-	return count;
+		init();
+		DFS dfs = new DFS(g);
+		List<Vertex> topologicalList = dfs.topologicalOrder1();
+		Vertex[] arr = topologicalList.toArray(new Vertex[topologicalList.size()]);
+		if(dfs.isCycle){
+			return 0;
+		}
+		Enumerate<Vertex> etop = new Enumerate<>(arr, sel);
+		etop.permute(arr.length);
+
+    	print = flag;
+    	return count;
     }
 
     //-------------------static methods----------------------

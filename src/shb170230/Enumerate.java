@@ -43,10 +43,16 @@ public class Enumerate<T> {
             visit(arr);
         } else {
             int d = k - c;
-            permute(c - 1);
+            if(app.select(arr[d])) {
+                permute(c - 1);
+                app.unselect(arr[d]);
+            }
             for (int i = d + 1; i < arr.length; i++) {
                 swap(d, i);
-                permute(c - 1);
+                if(app.select(arr[d])) {
+                    permute(c - 1);
+                    app.unselect(arr[d]);
+                }
                 swap(d, i);
             }
         }
@@ -56,7 +62,7 @@ public class Enumerate<T> {
 
     public void visit(T[] array) {
 	count++;
-        //app.visit(array, k);
+	app.visit(array, k);
     }
     
     //----------------------Nested class: Approver-----------------------
@@ -66,7 +72,9 @@ public class Enumerate<T> {
     // Extend this class in algorithms that need to enumerate permutations with precedence constraints
     public static class Approver<T> {
 	/* Extend permutation by item? */
-	public boolean select(T item) { return true; }
+	public boolean select(T item) {
+	    return true;//(int)(item) % 2 == 0;
+	}
 
         /* Backtrack selected item */
 	public void unselect(T item) { }
@@ -106,8 +114,8 @@ public class Enumerate<T> {
     }
 
     public static void main(String args[]) {
-        int n = 1000;
-        int k = 10;
+        int n = 5;
+        int k = 5;
         if (args.length > 0) {
             n = Integer.parseInt(args[0]);
             k = n;
