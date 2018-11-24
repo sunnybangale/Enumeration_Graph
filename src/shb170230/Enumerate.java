@@ -39,22 +39,30 @@ public class Enumerate<T> {
     // n = arr.length, choose k things, d elements arr[0..d-1] done
     // c more elements are needed from arr[d..n-1].  d = k-c.
     public void permute(int c) {
+
+        System.out.println();
+        System.out.println("arr "+Arrays.toString(arr) + "  c: "+ c);
         if (c == 0) {
+            System.out.println("Printing array ");
             visit(arr);
         } else {
             int d = k - c;
+            System.out.println("d: "+d);
             permute(c - 1);
             for (int i = d + 1; i < arr.length; i++) {
                 swap(d, i);
+                System.out.println("d : "+ d + " After select "+Arrays.toString(arr));
                 permute(c - 1);
                 swap(d, i);
+                System.out.println("d : "+ d + " After un-select "+Arrays.toString(arr));
+
             }
         }
     }
 
     public void visit(T[] array) {
 	count++;
-        //app.visit(array, k);
+        app.visit(array, k);
     }
     
     //----------------------Nested class: Approver-----------------------
@@ -104,8 +112,8 @@ public class Enumerate<T> {
     }
 
     public static void main(String args[]) {
-        int n = 1000;
-        int k = 10;
+        int n = 3;
+        int k = 3;
         if (args.length > 0) {
             n = Integer.parseInt(args[0]);
             k = n;
