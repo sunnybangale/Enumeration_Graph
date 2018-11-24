@@ -45,7 +45,8 @@ public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.En
 	    }
 	}
     }
-    
+
+
     
     // To do: LP4; return the number of topological orders of g
     public long enumerateTopological(boolean flag) {
