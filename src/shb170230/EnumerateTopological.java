@@ -60,43 +60,49 @@ public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.En
     }
 
     //TODO
-	void swap(int i, int j) {
+	void swap(int i, int j, Vertex[] arr) {
 		Vertex tmp = arr[i];
 		arr[i] = arr[j];
 		arr[j] = tmp;
 	}
 
-	private boolean isValid(Vertex d, Vertex i)
+	private boolean isValid(int d, int i, Vertex[] arr)
 	{
-		for(Graph.Edge v: g.outEdges(d))
-		{
-			if(v.toVertex().equals(i))
+		for(int x = d; x < arr.length; x++){
+			for(Graph.Edge v: g.outEdges(arr[x]))
 			{
-				return false;
+				if(v.toVertex().equals(arr[i]))
+				{
+					return false;
+				}
 			}
 		}
 		return true;
 	}
 
-    private void enumerateAllTopological(int c)
+    private long enumerateAllTopological(int c, Vertex[] arr)
 	{
 		int k = arr.length;
 		if (c == 0) {
 			Selector s = new Selector();
 			s.visit(arr,k);
+			System.out.println("permuted" + Arrays.toString(arr));
 		} else {
 			int d = k - c;
-			enumerateAllTopological(c - 1);
+			enumerateAllTopological(c - 1, arr);
 			for (int i = d + 1; i < arr.length; i++) {
 
-				if(isValid(arr[d], arr[i]))
+				if(isValid(d, i, arr))
 				{
-					swap(d, i);
-					enumerateAllTopological(c - 1);
-					swap(d, i);
+					swap(d, i, arr);
+					enumerateAllTopological(c - 1, arr);
+					swap(d, i, arr);
+				}else{
+					//break;
 				}
 			}
 		}
+		return count;
 	}
 
     // To do: LP4; return the number of topological orders of g
@@ -104,18 +110,20 @@ public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.En
 
     	DFS d = new DFS(g);
 		List<Vertex> topologicalList = d.topologicalOrder1();
-		System.out.println(topologicalList);
-		arr = topologicalList.toArray(arr);
-
+		//System.out.println(topologicalList);
+		arr = topologicalList.toArray(new Vertex[topologicalList.size()]);
+		/*for(int i = 0; i < topologicalList.size(); i++){
+			arr[i] = topologicalList.get(i);
+		}*/
+		//System.out.println(Arrays.toString(arr));
 		if(d.isCycle){
 			return 0;
 		}
-
 		EnumerateTopological e = new EnumerateTopological(g);
-		e.enumerateAllTopological(g.size());
+		count = e.enumerateAllTopological(arr.length, arr);
+    	//print = flag;
 
-    	print = flag;
-	return count;
+		return count;
     }
 
     //-------------------static methods----------------------
@@ -127,7 +135,7 @@ public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.En
 
     public static long enumerateTopologicalOrders(Graph g) {
         EnumerateTopological et = new EnumerateTopological(g);
-	return et.enumerateTopological(true);
+		return et.enumerateTopological(true);
     }
 
     public static void main(String[] args) {
@@ -136,12 +144,13 @@ public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.En
 
 		int VERBOSE = 0;
 		Scanner in;
-//        if(args.length > 0) { VERBOSE = Integer.parseInt(args[0]); }
+        if(args.length > 0) { VERBOSE = Integer.parseInt(args[0]); }
 		try {
-			in = args.length > 0 ? new Scanner(new File(args[0])) : new Scanner(graph);
+			in = args.length > 0 ? new Scanner(new File(args[1])) : new Scanner(graph);
 			Graph g = Graph.readDirectedGraph(in);
 			Graph.Timer t = new Graph.Timer();
-			long result;
+			long result = 0;
+			result = enumerateTopologicalOrders(g);
 			if (VERBOSE > 0) {
 				result = enumerateTopologicalOrders(g);
 			} else {
