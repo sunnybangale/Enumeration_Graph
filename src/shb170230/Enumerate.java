@@ -52,6 +52,8 @@ public class Enumerate<T> {
         }
     }
 
+    //
+
     public void visit(T[] array) {
 	count++;
         //app.visit(array, k);
