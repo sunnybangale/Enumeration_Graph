@@ -1,7 +1,11 @@
-
-/** Starter code for permutations and combinations of distinct items
- *  @author
- **/
+/** Generates permutations of distinct items of the array
+ *
+ * @authors
+ * Ameya Kasar      (aak170230)
+ * Shreyash Mane    (ssm170730)
+ * Sunny Bangale    (shb170230)
+ * Ketki Mahajan    (krm150330)
+ */
 
 package shb170230;
 
@@ -34,10 +38,17 @@ public class Enumerate<T> {
 	this(arr, arr.length, new Approver<T>());
     }
 
-    //-------------Methods of Enumerate class: To do-----------------
+    //-------------Methods of Enumerate class: -----------------
 
     // n = arr.length, choose k things, d elements arr[0..d-1] done
     // c more elements are needed from arr[d..n-1].  d = k-c.
+
+    /**
+     * Generates all the permutations of c elements over the given @arr.
+     * It is assumed that the array consists of distinct elements.
+     * @param c the number of elements that need to be permuted
+     */
+
     public void permute(int c) {
         if (c == 0) {
             visit(arr);
@@ -58,7 +69,6 @@ public class Enumerate<T> {
         }
     }
 
-    //
 
     public void visit(T[] array) {
 	count++;
@@ -73,7 +83,7 @@ public class Enumerate<T> {
     public static class Approver<T> {
 	/* Extend permutation by item? */
 	    public boolean select(T item) {
-	        return true;//(int)(item) % 2 == 0;
+	        return true;
 	    }
 
         /* Backtrack selected item */

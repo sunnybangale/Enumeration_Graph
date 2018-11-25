@@ -1,13 +1,13 @@
-/** Starter code for SP8
+/** Implementation of DFS on a Graph.
  *
- *  SP8 for CS 5V81 (F18)
- *
- *  Team members:
- *  1. Sunny Bangale (shb170230)
- *  2. Utkarsh Gandhi (usg170030)
+ * @authors
+ * Ameya Kasar      (aak170230)
+ * Shreyash Mane    (ssm170730)
+ * Sunny Bangale    (shb170230)
+ * Ketki Mahajan    (krm150330)
  */
 
-// change to your netid
+
 package shb170230;
 
 import rbk.Graph;
@@ -27,7 +27,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex>
     LinkedList<Vertex> finishList; //list to store topological order
     /**
      * Constructor for DFS class
-     * @param g
+     * @param g on which dfs is to performed
      */
     public DFS(Graph g) {
         super(g, new DFSVertex(null));
@@ -38,19 +38,19 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex>
     /**
      * depthFirstSearch
      * static function to call DFS on Graph g
-     * @param g
+     * @param g on which dfs is to performed
      * @return object of DFS class
      */
     public static DFS depthFirstSearch(Graph g) {
         DFS d = new DFS(g);
-        d.dfs(/*g*/);
+        d.dfs();
         return d;
     }
 
     /**
      * topologicalOrder1
      * Purpose: Find topological oder of a DAG using DFS. Returns null if g is not a DAG.
-     * @param g
+     * @param g on which dfs is to performed
      * @return List of vertices if there's no cycle otherwise null
      */
    public static List<Vertex> topologicalOrder1(Graph g) {
@@ -59,12 +59,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex>
     }
 
     public static void main(String[] args) throws Exception {
-        //String string = "7 8   1 2 2   1 3 3   2 4 5   3 4 4   4 5 1   5 1 7   6 7 1   7 6 1 0";
-        //String string = "4 2  1 2 2   3 4 2 0";
-        //String string = "2 0  0";
-        //String string = "10 12   1 3 2   1 8 3   2 4 5   3 2 4   4 7 1   5 4 7   5 10 1   6 8 1   6 10 1   8 2 1  8 5 1  10 9 1  0";
         String string = "8 9  2 1 2  3 2 3  4 2 5  6 5 1  6 3 7  7 5 1  7 4 0  8 6 1  8 7 1 0";
-        //String string = "0 0 0";
 
         Scanner in;
         // If there is a command line argument, use it as file from which
@@ -85,18 +80,17 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex>
     /**
      * dfs
      * Purpose: Helper method for DFS. It performs Depth first search of graph
-     * @param
      */
-    private void dfs(/*Graph g*/) {
+    private void dfs() {
 
         for (Vertex u : g) {
-            get(u).vertexColor = color.WHITE ;
+            get(u).vertexColor = Color.WHITE ;
             get(u).parent = null;
         }
 
         for (Vertex u : g)
         {
-            if (get(u).vertexColor == color.WHITE)
+            if (get(u).vertexColor == Color.WHITE)
             {
                 dfsVisit(u);
             }
@@ -106,32 +100,30 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex>
     /**
      * dfsVisit
      * Purpose: Helper method for dfs. It recursively iterates every node of given vertex u.
-     * @param u
+     * @param u mark this node as visited
      */
     private void dfsVisit(Vertex u)
     {
-        get(u).vertexColor = color.GRAY;
+        get(u).vertexColor = Color.GRAY;
 
         for(Graph.Edge e: g.outEdges(u))
         {
             Vertex v = e.toVertex();
 
-            if(get(v).vertexColor == color.WHITE)
+            if(get(v).vertexColor == Color.WHITE)
             {
                 get(v).parent = u;
                 dfsVisit(v);
             }
             else
-            if(get(v).vertexColor == color.GRAY)
+            if(get(v).vertexColor == Color.GRAY)
             {
-                //System.out.println("Cycle detected in the graph");
                 isCycle = true;
-              //  return;
             }
         }
 
         finishList.addFirst(u);
-        get(u).vertexColor = color.BLACK;
+        get(u).vertexColor = Color.BLACK;
     }
 
 
@@ -147,19 +139,19 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex>
     }
 
 
-    enum color //enumeration for storing color of vertices
+    enum Color //enumeration for storing Color of vertices
     {
-        WHITE, GRAY, BLACK;
+        WHITE, GRAY, BLACK
     }
 
     public static class DFSVertex implements Factory {
 
         Vertex parent; //stores parent of vertex
-        color vertexColor; //stores color of vertex
+        Color vertexColor; //stores Color of vertex
 
         public DFSVertex(Vertex u) {
             parent = null;
-            vertexColor = color.WHITE;
+            vertexColor = Color.WHITE;
         }
 
         public DFSVertex make(Vertex u) {

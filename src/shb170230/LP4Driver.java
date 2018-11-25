@@ -1,5 +1,12 @@
+/** Driver for LP4
+ *
+ * @authors
+ * Ameya Kasar      (aak170230)
+ * Shreyash Mane    (ssm170730)
+ * Sunny Bangale    (shb170230)
+ * Ketki Mahajan    (krm150330)
+ */
 
-// Change to your netid
 package shb170230;
 
 import java.util.Scanner;

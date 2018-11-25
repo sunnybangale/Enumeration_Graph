@@ -1,5 +1,10 @@
-/* Starter code for enumerating topological orders of a DAG
- * @author
+/** Implementation to generate all the permutations of Topological Ordering in a Directed Graph.
+ *
+ * @authors
+ * Ameya Kasar      (aak170230)
+ * Shreyash Mane    (ssm170730)
+ * Sunny Bangale    (shb170230)
+ * Ketki Mahajan    (krm150330)
  */
 
 package shb170230;
@@ -7,12 +12,13 @@ import rbk.Graph;
 import rbk.Graph.GraphAlgorithm;
 import rbk.Graph.Vertex;
 import rbk.Graph.Factory;
+import rbk.Graph.Edge;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+
 
 public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.EnumVertex> {
     boolean print;  // Set to true to print array in visit
@@ -27,7 +33,8 @@ public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.En
 
     static class EnumVertex implements Factory {
 
-    	int inDegree;
+    	// Number of Incoming edges to an EnumVertex
+    	long inDegree;
 
 		EnumVertex() {
 			this.inDegree = 0;
@@ -38,7 +45,11 @@ public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.En
 
     }
 
-	private void init (/*Graph g*/){
+
+	/**
+	 * Utility method that sets the @inDegree for all the vertices of the graph
+	 */
+	private void initializeEnumVertex(){
     	for(Vertex u : g){
     		get(u).inDegree = u.inDegree();
 		}
@@ -47,16 +58,13 @@ public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.En
     class Selector extends Enumerate.Approver<Vertex> {
 		@Override
 		public boolean select(Vertex u) {
-
 			if(get(u).inDegree == 0){
-				for(Graph.Edge x : g.outEdges(u)){
-					Vertex t = x.toVertex();
-					get(t).inDegree--;
+				for(Edge edge : g.outEdges(u)){
+					Vertex v = edge.toVertex();
+					get(v).inDegree--;
 				}
 				return true;
 			}
-
-
 			return false;
 		}
 
@@ -79,17 +87,31 @@ public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.En
 			}
 		}
     }
-    
-    
-    // To do: LP4; return the number of topological orders of g
-    public long enumerateTopological(boolean flag) {
+
+
+	/**
+	 * Finds the count of all the permutations of topological orders on the given graph @g
+	 * @param flag to check if we should print all the permutations
+	 * @return count of permutations
+	 */
+	public long enumerateTopological(boolean flag) {
 		print = flag;
-    	init();
-		Vertex[] arr = g.getVertexArray();
-		System.out.println(Arrays.toString(arr));
-		Enumerate<Vertex> etop = new Enumerate<>(arr, sel);
-		etop.permute(arr.length);
-    	return count;
+    	initializeEnumVertex();
+
+    	DFS dfs = new DFS(g);
+    	List<Vertex> topologicalList = dfs.topologicalOrder1();
+    	//Check for cycle
+    	if(dfs.isCycle){
+    		return 0;
+		}
+
+		Vertex[] vertexArray = new Vertex[topologicalList.size()];
+    	topologicalList.toArray(vertexArray);
+
+    	Enumerate<Vertex> topologicalEnumeration = new Enumerate<>(vertexArray, sel);
+		topologicalEnumeration.permute(vertexArray.length);
+
+		return count;
     }
 
     //-------------------static methods----------------------
@@ -115,14 +137,12 @@ public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.En
 			in = args.length > 0 ? new Scanner(new File(args[1])) : new Scanner(graph);
 			Graph g = Graph.readDirectedGraph(in);
 			Graph.Timer t = new Graph.Timer();
-			long result = 0;
-			result = enumerateTopologicalOrders(g);
-			result = countTopologicalOrders(g);
-			/*if (VERBOSE > 0) {
+			long result;
+			if (VERBOSE > 0) {
 				result = enumerateTopologicalOrders(g);
 			} else {
 				result = countTopologicalOrders(g);
-			}*/
+			}
 			System.out.println("\n" + result + "\n" + t.end());
 
 		} catch (FileNotFoundException e) {

@@ -1,11 +1,13 @@
-/* Driver code for PERT algorithm (LP4)
+/**
+ * Implementation of PERT/CPM in a directed graph using DFS
+ *
  * @author
- * Ameya Kasar (aak170230)
- *
- *
+ * Ameya Kasar      (aak170230)
+ * Shreyash Mane    (ssm170730)
+ * Sunny Bangale    (shb170230)
+ * Ketki Mahajan    (krm150330)
  */
 
-// change package to your netid
 package shb170230;
 
 import rbk.Graph;
@@ -13,6 +15,7 @@ import rbk.Graph.Vertex;
 import rbk.Graph.Edge;
 import rbk.Graph.GraphAlgorithm;
 import rbk.Graph.Factory;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -21,9 +24,16 @@ import java.util.Scanner;
 
 public class PERT extends GraphAlgorithm<PERT.PERTVertex> {
 
+    //Number of critical nodes
     private int criticalCount = 0;
-    private boolean isPERTDag=false;
 
+    //Flag to check if PERT is a DAG
+    private boolean isCycle = false;
+
+    /**
+     * Finds all the nodes having slack value of 0 in the graph
+     * @return number of critical nodes
+     */
     public int getCriticalCount() {
         return criticalCount;
     }
@@ -31,11 +41,11 @@ public class PERT extends GraphAlgorithm<PERT.PERTVertex> {
 
     public static class PERTVertex implements Factory {
 
-    	private int ec;
-        private int lc;
-        private int slack;
-        private int duration;
-        private boolean critical;
+    	private int ec; // Earliest completion time of vertex
+        private int lc; //  Latest completion time of vertex
+        private int slack; // Slack of vertex
+        private int duration; // time required to finish the vertex
+        private boolean critical; // Is vertex u on a critical path?
 
 
 	public PERTVertex(Vertex u) {
@@ -59,10 +69,10 @@ public class PERT extends GraphAlgorithm<PERT.PERTVertex> {
         get(u).duration = d;
     }
 
-    //TODO
     public boolean pert() {
-	    return isPERTDag;
+	    return isCycle;
     }
+
     public int ec(Vertex u) {
 	return get(u).ec;
     }
@@ -85,6 +95,12 @@ public class PERT extends GraphAlgorithm<PERT.PERTVertex> {
         return get(t).ec;
     }
 
+    /**
+     * Returns if a vertex is critical
+     * @param u the vertex whose value is needed
+     * @return true if slack is 0
+     */
+
     public boolean critical(Vertex u) {
 	return get(u).critical;
     }
@@ -97,7 +113,11 @@ public class PERT extends GraphAlgorithm<PERT.PERTVertex> {
 	    return getCriticalCount();
     }
 
-    //User defined
+
+    /**
+     * Calculates the @ec and @lc and sets all the important params  for each vertex in the graph
+     * @param duration an array containing time taken to complete each task
+     */
     private void pert(int[] duration){
         //Adding source and target node
         Vertex s = g.getVertex(1);
@@ -115,8 +135,8 @@ public class PERT extends GraphAlgorithm<PERT.PERTVertex> {
         DFS dfs = new DFS(g);
         List<Vertex> topologicalList = dfs.topologicalOrder1();
 
-        isPERTDag = dfs.isCycle;
-        if(isPERTDag){
+        isCycle = dfs.isCycle;
+        if(isCycle){
             return;
         }
         for(Vertex u : topologicalList)
@@ -131,7 +151,6 @@ public class PERT extends GraphAlgorithm<PERT.PERTVertex> {
             }
         }
 
-        //Vertex t = g.getVertex(g.size());
         int maxTime = get(t).ec;
 
         for(Vertex u: g)
@@ -144,26 +163,27 @@ public class PERT extends GraphAlgorithm<PERT.PERTVertex> {
         Collections.reverse(topologicalList);
 
 
-        for(Vertex u: topologicalList)
-        {
-            //if( !( u.equals(g.getVertex(1)) ||  u.equals(g.getVertex(g.size())) ) ){
-                for(Edge e: g.outEdges(u))
-                {
-                    Vertex v = e.otherEnd(u);
+        for(Vertex u: topologicalList) {
+            for(Edge e: g.outEdges(u))
+            {
+                Vertex v = e.otherEnd(u);
 
-                    if(get(v).lc - get(v).duration < get(u).lc)
-                    {
-                        get(u).lc = get(v).lc - get(v).duration;
-                    }
+                if(get(v).lc - get(v).duration < get(u).lc)
+                {
+                    get(u).lc = get(v).lc - get(v).duration;
                 }
-                get(u).slack = get(u).lc - get(u).ec;
-                setCritical(u);
-            //}
+            }
+            get(u).slack = get(u).lc - get(u).ec;
+            setCritical(u);
 
         }
 
     }
 
+    /**
+     * A utility method that is used to increase the count of critical nodes and sets the criticalValue for a node
+     * @param u which should be made critical or not
+     */
     private void setCritical(Vertex u)
     {
         if(get(u).slack == 0)
@@ -173,7 +193,6 @@ public class PERT extends GraphAlgorithm<PERT.PERTVertex> {
         }
     }
 
-    // setDuration(u, duration[u.getIndex()]);
     public static PERT pert(Graph g, int[] duration) {
     	PERT p= new PERT(g);
         p.pert(duration);
