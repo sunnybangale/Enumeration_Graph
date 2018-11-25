@@ -85,17 +85,10 @@ public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.En
     public long enumerateTopological(boolean flag) {
 		print = flag;
     	init();
-		DFS dfs = new DFS(g);
-		List<Vertex> topologicalList = dfs.topologicalOrder1();
-		if(topologicalList == null){
-			return 0;
-		}
-		Vertex[] arr = topologicalList.toArray(new Vertex[topologicalList.size()]);
+		Vertex[] arr = g.getVertexArray();
 		System.out.println(Arrays.toString(arr));
 		Enumerate<Vertex> etop = new Enumerate<>(arr, sel);
 		etop.permute(arr.length);
-
-
     	return count;
     }
 

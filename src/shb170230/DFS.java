@@ -126,7 +126,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex>
             {
                 //System.out.println("Cycle detected in the graph");
                 isCycle = true;
-                return;
+              //  return;
             }
         }
 
