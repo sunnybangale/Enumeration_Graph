@@ -142,7 +142,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex>
      */
     public List<Vertex> topologicalOrder1()
     {
-        dfs(/*g*/);
+        dfs();
         return isCycle ? null : finishList;
     }
 

@@ -87,11 +87,11 @@ public class EnumerateTopological extends GraphAlgorithm<EnumerateTopological.En
     	init();
 		DFS dfs = new DFS(g);
 		List<Vertex> topologicalList = dfs.topologicalOrder1();
-		Vertex[] arr = topologicalList.toArray(new Vertex[topologicalList.size()]);
-		System.out.println(Arrays.toString(arr));
-		if(dfs.isCycle){
+		if(topologicalList == null){
 			return 0;
 		}
+		Vertex[] arr = topologicalList.toArray(new Vertex[topologicalList.size()]);
+		System.out.println(Arrays.toString(arr));
 		Enumerate<Vertex> etop = new Enumerate<>(arr, sel);
 		etop.permute(arr.length);
 
