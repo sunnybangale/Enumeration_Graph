@@ -72,9 +72,9 @@ public class Enumerate<T> {
     // Extend this class in algorithms that need to enumerate permutations with precedence constraints
     public static class Approver<T> {
 	/* Extend permutation by item? */
-	public boolean select(T item) {
-	    return true;//(int)(item) % 2 == 0;
-	}
+	    public boolean select(T item) {
+	        return true;//(int)(item) % 2 == 0;
+	    }
 
         /* Backtrack selected item */
 	public void unselect(T item) { }
